@@ -2,14 +2,18 @@
   <global-header :user="user"></global-header>
   <div class="container">
     <column-list :list="list"></column-list>
+    <validate-input :rules="emailRules" type="email" placeholder="请输入邮箱" v-model="emailValue"></validate-input>
+    <validate-input type="password" placeholder="请输入密码" v-model="passwordValue"></validate-input>
+    <button @click="printValue">val</button>
   </div>
 </template>
 
 <script lang="ts">
 import 'bootstrap/dist/css/bootstrap.min.css'
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import columnList, { ColumnItemInterface } from './components/columnList.vue'
 import globalHeader, { HeaderPropInterface } from './components/globalHeader.vue'
+import validateInput, { RulesProp } from './components/validateInput.vue'
 const testDataList: ColumnItemInterface[] = [
   {
     id: 1,
@@ -50,16 +54,37 @@ const user: HeaderPropInterface = {
   name: 'xxxx',
   isLogined: true
 }
+const emailRules: RulesProp = [
+  {
+    type: 'required',
+    message: '电子邮箱地址不能为空'
+  },
+  {
+    type: 'email',
+    message: '请输入正确的邮箱地址'
+  }
+]
+const emailValue = ref('')
+const passwordValue = ref('')
+const printValue = () => {
+  console.log(emailValue.value)
+  console.log(passwordValue.value)
+}
 export default defineComponent({
   name: 'App',
   components: {
     columnList,
-    globalHeader
+    globalHeader,
+    validateInput
   },
   setup () {
     return {
       user,
-      list: testDataList
+      list: testDataList,
+      emailRules,
+      emailValue,
+      passwordValue,
+      printValue
     }
   }
 })
