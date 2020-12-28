@@ -2,15 +2,15 @@
   <nav class="navbar navbar-dark bg-primary justify-content-between mb-4 px-4">
     <router-link class="navbar-brand" to="/">ZheYe</router-link>
     <div v-if="user.isLogin">
-      <dropdown :title="`你好，${user.name}`">
+      <dropdown :title="`你好，${user.nickName}`">
         <dropdown-item>新建文章</dropdown-item>
         <dropdown-item disabled>编辑文章</dropdown-item>
-        <dropdown-item>退出登录</dropdown-item>
+        <dropdown-item @click="logout">退出登录</dropdown-item>
       </dropdown>
     </div>
     <ul v-else class="list-inline mb-0">
       <li class="list-inline-item"><router-link to="/login" class="btn btn-outline-light my-2">登录</router-link></li>
-      <li class="list-inline-item"><router-link to="/login" class="btn btn-outline-light my-2">注册</router-link></li>
+      <li class="list-inline-item"><router-link to="/signUp" class="btn btn-outline-light my-2">注册</router-link></li>
     </ul>
   </nav>
 </template>
@@ -26,8 +26,12 @@ export default defineComponent({
     const store = useStore()
     const user = computed(() => store.state.user)
     console.log(store.state.user)
+    const logout = () => {
+      store.commit('logout')
+    }
     return {
-      user
+      user,
+      logout
     }
   },
   components: {

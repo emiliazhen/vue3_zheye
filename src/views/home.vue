@@ -12,7 +12,11 @@
       </div>
     </section>
     <h4 class="font-weight-bold text-center">发现精彩</h4>
-    <div v-if="isLoading">正在加载... 😀</div>
+    <div class="d-flex justify-content-center" v-if="isLoading">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
     <column-list :list="list" v-else></column-list>
     <button
       class="btn btn-outline-primary mt-2 mb-5 mx-auto btn-block w-25"
@@ -26,9 +30,7 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted, reactive, toRefs } from 'vue'
 import columnList from '@/components/columnList.vue'
-import {
-  API_COLUMN_GETS
-} from '@/api'
+import { API_COLUMN_GETS } from '@/api'
 import store from '@/store'
 export default defineComponent({
   components: {

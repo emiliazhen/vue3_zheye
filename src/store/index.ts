@@ -1,13 +1,16 @@
+// import fetch from '@/utils/fetch'
 import axios from 'axios'
 import { createStore } from 'vuex'
 import {
-  API_COLUMN_GETS
+  API_COLUMN_GETS,
+  API_USER_LOGIN,
+  API_USER_CURRENT
 } from '@/api'
 
 interface UserProps {
   isLogin: boolean;
-  name?: string;
-  id?: number;
+  nickName?: string;
+  _id?: number;
 }
 interface ListProps<P> {
   [id: string]: P;
@@ -36,6 +39,7 @@ export interface ColumnProps {
   description: string;
 }
 interface GlobalDataProps {
+  token: string;
   user: UserProps;
   posts: [];
   // columns: {
@@ -46,6 +50,7 @@ interface GlobalDataProps {
 }
 const store = createStore<GlobalDataProps>({
   state: {
+    token: localStorage.getItem('token') || '',
     user: {
       isLogin: false
     },
@@ -54,12 +59,21 @@ const store = createStore<GlobalDataProps>({
     isLoading: false
   },
   mutations: {
-    LOGIN (state) {
+    login (state, token) {
+      state.token = token
+      localStorage.setItem('token', token)
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`
+    },
+    logout (state) {
+      state.token = ''
       state.user = {
-        name: 'vvvv',
-        id: 1,
-        isLogin: true
+        isLogin: false
       }
+      localStorage.removeItem('token')
+      delete axios.defaults.headers.common.Authorization
+    },
+    setUserInfo (state, data) {
+      state.user = { isLogin: true, ...data }
     },
     fetchColumns (state, data) {
       state.columns = data.list
@@ -77,19 +91,23 @@ const store = createStore<GlobalDataProps>({
         context.commit('fetchColumns', res.data.data)
       })
     },
-    fetchColumn ({ commit }, id) {
-      axios.get(`/api/columns/${id}`).then(res => {
-        commit('fetchColumn', res.data.data)
+    async login ({ commit }, data) {
+      const res = await API_USER_LOGIN(data)
+      if (res.status === 200) {
+        commit('login', res.data.data.token)
+      }
+      return res
+    },
+    fetchUserInfo ({ commit }) {
+      API_USER_CURRENT().then(res => {
+        if (res.status === 200) {
+          commit('setUserInfo', res.data.data)
+        }
       })
     },
-    fetchPosts (context) {
-      axios.get('/api/columns').then(res => {
-        context.commit('fetchColumns', res.data.data)
-      })
-    },
-    fetchPost ({ commit }, id) {
-      axios.get(`/api/columns/${id}`).then(res => {
-        commit('fetchColumn', res.data.data)
+    loginAndFetchUserInfo ({ dispatch }, data) {
+      return dispatch('login', data).then(() => {
+        return dispatch('fetchUserInfo')
       })
     }
   }

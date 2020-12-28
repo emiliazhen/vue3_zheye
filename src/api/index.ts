@@ -103,6 +103,9 @@ export const API_FILE_UPLOAD = (parameters = {}) => {
   return fetch({
     url: '/api/upload',
     method: 'post',
-    data: parameters
+    data: parameters,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
   })
 }

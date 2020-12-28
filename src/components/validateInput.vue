@@ -10,8 +10,9 @@
 import { defineComponent, reactive, PropType, onMounted } from 'vue'
 import { emitter } from '@/components/validateForm.vue'
 interface RuleInterface {
-  type: 'required' | 'email';
+  type: 'required' | 'email' | 'custom';
   message: string;
+  validator?: () => boolean;
 }
 export type RulesProp = RuleInterface[]
 export type TagType = 'input' | 'textarea'
@@ -46,6 +47,9 @@ export default defineComponent({
               break
             case 'email':
               noError = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(inputRef.val)
+              break
+            case 'custom':
+              noError = r.validator ? r.validator() : true
               break
             default:
               break

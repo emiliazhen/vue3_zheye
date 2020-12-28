@@ -1,5 +1,9 @@
 <template>
-  <div v-if="isLoading">正在加载... 😀</div>
+  <div class="d-flex justify-content-center" v-if="isLoading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
   <div class="column-detail-page w-75 mx-auto" v-else>
     <div class="column-info row mb-4 border-bottom pb-4 align-items-center" v-if="column">
       <div class="col-3 text-center">

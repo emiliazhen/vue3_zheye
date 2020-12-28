@@ -14,6 +14,7 @@ import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import validateInput, { RulesProp } from '@/components/validateInput.vue'
 import ValidateForm from '@/components/validateForm.vue'
+import createMessage from '@/components/createMessage'
 const emailRules: RulesProp = [
   {
     type: 'required',
@@ -30,20 +31,27 @@ const passwordRules: RulesProp = [
     message: '密码不能为空'
   }
 ]
-const emailValue = ref('')
-const passwordValue = ref('')
 export default defineComponent({
   components: {
     validateInput,
     ValidateForm
   },
   setup () {
+    const emailValue = ref('')
+    const passwordValue = ref('')
     const store = useStore()
     const router = useRouter()
     const onFormSubmit = (validate: boolean) => {
       if (validate) {
-        router.push('/')
-        store.commit('LOGIN')
+        store.dispatch('loginAndFetchUserInfo', {
+          email: emailValue.value,
+          password: passwordValue.value
+        }).then(() => {
+          createMessage('登录成功 正在跳转首页', 'success')
+          setTimeout(() => {
+            router.push('/')
+          }, 2000)
+        })
       }
     }
     return {

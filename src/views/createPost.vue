@@ -1,6 +1,7 @@
 <template>
   <div class="create-post-page">
     <h4>{{isEditMode ? '编辑文章' : '新建文章'}}</h4>
+    <upload></upload>
     <validate-form @form-submit="onFormSubmit">
       <div class="mb-3">
         <label class="form-label">文章标题：</label>
@@ -22,11 +23,12 @@ import { defineComponent, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import validateInput, { RulesProp } from '@/components/validateInput.vue'
 import validateForm from '@/components/validateForm.vue'
-
+import upload from '@/components/upload.vue'
 export default defineComponent({
   components: {
     validateInput,
-    validateForm
+    validateForm,
+    upload
   },
   setup () {
     const route = useRoute()
