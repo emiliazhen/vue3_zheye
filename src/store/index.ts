@@ -10,7 +10,8 @@ import {
 interface UserProps {
   isLogin: boolean;
   nickName?: string;
-  _id?: number;
+  _id?: string;
+  column?: string;
 }
 interface ListProps<P> {
   [id: string]: P;

@@ -2,6 +2,11 @@ import fetch from '@/utils/fetch'
 interface IdStringParamsInterface {
   id: string;
 }
+interface UpdatePostInterface extends IdStringParamsInterface {
+  title: string;
+  content: string;
+  image: string;
+}
 // 用户 - 登录;
 export const API_USER_LOGIN = (parameters = {}) => {
   return fetch({
@@ -75,7 +80,7 @@ export const API_POST_GET = (parameters: IdStringParamsInterface) => {
   })
 }
 // 文章 - 更新;
-export const API_POST_UPDATE = (parameters: IdStringParamsInterface) => {
+export const API_POST_UPDATE = (parameters: UpdatePostInterface) => {
   return fetch({
     url: `/api/posts/${parameters.id}`,
     method: 'patch',
@@ -98,7 +103,7 @@ export const API_POST_COLUMNS_GETS = (parameters: IdStringParamsInterface) => {
     params: parameters
   })
 }
-// 文章 - 新建;
+// 文件 - 上传;
 export const API_FILE_UPLOAD = (parameters = {}) => {
   return fetch({
     url: '/api/upload',

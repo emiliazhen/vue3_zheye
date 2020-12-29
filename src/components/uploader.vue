@@ -1,21 +1,35 @@
 <template>
   <div class="file-upload">
-    <button class="btn btn-primary" @click.prevent="clickUpload">
-      <span v-if="fileStatus === 'loading'">Loading...</span>
-      <span v-else-if="fileStatus === 'success'">上传成功</span>
-      <span v-else-if="fileStatus === 'error'">上传失败</span>
-      <span v-else>上传</span>
-    </button>
+    <div class="w-100 text-center file-upload-content" @click.prevent="clickUpload">
+      <slot name="loading" v-if="fileStatus === 'loading'">
+        Loading...
+      </slot>
+      <slot name="success" v-else-if="fileStatus === 'success'">
+        上传成功
+      </slot>
+      <slot name="error" v-else-if="fileStatus === 'error'">
+        上传失败
+      </slot>
+      <slot name="default" v-else>
+        点击上传
+      </slot>
+    </div>
     <input type="file" @change="fileChange" class="file-input d-none" ref="fileInput">
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, PropType, ref } from 'vue'
 import { API_FILE_UPLOAD } from '@/api'
 type UploadStatus = 'ready' | 'loading' | 'success' | 'error'
 export default defineComponent({
-  setup () {
+  props: {
+    beforeUpload: {
+      type: Function as PropType<(file: File) => boolean>
+    }
+  },
+  emits: ['success'],
+  setup (props, content) {
     const fileStatus = ref<UploadStatus>('ready')
     const fileInput = ref<null | HTMLInputElement>(null)
     const clickUpload = () => {
@@ -28,11 +42,19 @@ export default defineComponent({
       if (taget.files) {
         fileStatus.value = 'loading'
         const files = Array.from(taget.files)
+        if (props.beforeUpload) {
+          const result = props.beforeUpload(files[0])
+          if (!result) {
+            fileStatus.value = 'ready'
+            return
+          }
+        }
         const formData = new FormData()
         formData.append('file', files[0])
         API_FILE_UPLOAD(formData).then(res => {
           if (res.status === 200) {
             fileStatus.value = 'success'
+            content.emit('success', res.data.data.url)
           }
         }).catch(() => {
           fileStatus.value = 'error'
@@ -52,3 +74,11 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped>
+.file-upload-content{
+  background-color: #f5f5f5;
+  height: 240px;
+  color: #999;
+}
+</style>

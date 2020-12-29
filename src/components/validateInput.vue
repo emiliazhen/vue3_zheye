@@ -1,13 +1,13 @@
 <template>
   <div class="validate-input-container pb-3">
-    <input class="form-control" :class="{'is-invalid': inputRef.error}" :value="inputRef.val" @blur="validateInput" v-bind="$attrs" @input="updateValue" v-if="tag !== 'textarea'">
-    <textarea class="form-control" :class="{'is-invalid': inputRef.error}" :value="inputRef.val" @blur="validateInput" v-bind="$attrs" @input="updateValue" v-else/>
+    <input v-model="inputRef.val" class="form-control" :class="{'is-invalid': inputRef.error}" v-bind="$attrs" v-if="tag !== 'textarea'">
+    <textarea v-model="inputRef.val" class="form-control" :class="{'is-invalid': inputRef.error}"  v-bind="$attrs" v-else/>
     <span v-if="inputRef.error" class="invalid-feedback">{{inputRef.message}}</span>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, PropType, onMounted } from 'vue'
+import { defineComponent, reactive, PropType, onMounted, computed } from 'vue'
 import { emitter } from '@/components/validateForm.vue'
 interface RuleInterface {
   type: 'required' | 'email' | 'custom';
@@ -32,7 +32,12 @@ export default defineComponent({
   },
   setup (props, ctx) {
     const inputRef = reactive({
-      val: props.modelValue || '',
+      val: computed({
+        get: () => props.modelValue || '',
+        set: val => {
+          ctx.emit('update:modelValue', val)
+        }
+      }),
       error: false,
       message: ''
     })
